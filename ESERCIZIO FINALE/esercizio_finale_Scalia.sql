@@ -220,8 +220,7 @@ SELECT
     regions.region,
     CASE WHEN (NOW()- sales.saleDate > 180) THEN 1 ELSE 0 END AS moreThanSixMonths
   
-FROM 
-    sales
+FROM sales
 JOIN products ON sales.productID = products.productID
 JOIN categories ON products.categoryID = categories.categoryID
 JOIN countries ON sales.countryID = countries.countryID
