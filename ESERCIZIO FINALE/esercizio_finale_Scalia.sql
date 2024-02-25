@@ -123,38 +123,54 @@ INSERT INTO sales VALUES
  
 -- dato che le PK sono da considerarsi per loro natura "VALORI UNIVOCI" ho eleaborato due tipologie differenti di query per verificare l'unicità dei campi
 -- con queste tre query calcolo il numero di primary keys e il numero dei loro distinct nelle tabelle categories, countries, regions.
-SELECT count(categoryID), count(DISTINCT categoryID) 
+SELECT 
+	count(categoryID), 
+	count(DISTINCT categoryID) 
 FROM categories 
 AS catComparation;
 
-SELECT count(countryID), count(DISTINCT countryID) 
+SELECT 
+	count(countryID), 	
+	count(DISTINCT countryID) 
 FROM countries 
 AS couComparation;
 
-SELECT count(regionID), count(DISTINCT regionID) 
+SELECT 
+	count(regionID), 
+	count(DISTINCT regionID) 
 FROM regions 
 AS regComparation;
 
 -- con queste due invece, tramite sub query ottengo il conteggio per ogni PK, e poi ne cerco il valore massimo.
-SELECT MAX(keyCount) FROM(
-SELECT countryID, count(countryID) AS keyCount 
-FROM countries 
-GROUP BY countryID) 
+SELECT 
+MAX(keyCount) FROM(
+	SELECT countryID, 
+	count(countryID) AS keyCount 
+	FROM countries 
+	GROUP BY countryID) 
 as maxOccurrencies;
 
 SELECT MAX(kCount) FROM(
-SELECT saleID, count(saleID) AS kCount 
-FROM sales 
-GROUP BY saleID) 
+	SELECT saleID, 
+	count(saleID) AS kCount 
+	FROM sales 
+	GROUP BY saleID) 
 AS maxOcc;
 
 -- 2. Esporre l’elenco dei soli prodotti venduti e per ognuno di questi il fatturato totale per anno. 
 
 -- tramite join ottengo i records della tabella sales e quella della tabella prodotti, ottengo il fatturato moltiplicando quantità e prezzo, e li ordino come richiesto
-SELECT  products.productID, products.productName, YEAR(sales.saledate) AS saleYear, SUM(sales.amount * products.price) AS totalRevenue
+SELECT  
+	products.productID, 
+	products.productName, 
+	YEAR(sales.saledate) AS saleYear, 
+	SUM(sales.amount * products.price) AS totalRevenue
 FROM products 
 JOIN sales ON products.productID = sales.productID
-GROUP BY products.productID,  products.productName,  YEAR(sales.saledate)
+GROUP BY 
+	products.productID,  
+	products.productName,  
+	YEAR(sales.saledate)
 ORDER BY  products.productID,  saleYear;
 
 -- 3. Esporre il fatturato totale per stato per anno. Ordina il risultato per data e per fatturato decrescente. 
@@ -171,7 +187,9 @@ ORDER BY saleYear ASC,  totalRevenue DESC;
 
 -- dopo aver ottenuto la categoria e la somma del totale dei pezzi ordinati, con sum ottengo il totale, utilizzando l'ordine discendente con limit 
 -- isolo il risultato più alto. La risposta è Magic con 1505 pezzi venduti.
-SELECT categoryName, SUM(sales.amount) AS totalAmount
+SELECT 
+	categoryName, 	
+	SUM(sales.amount) AS totalAmount
 FROM products
 JOIN categories ON products.categoryID = categories.categoryID
 JOIN sales ON products.productID = sales.productID
@@ -200,7 +218,8 @@ WHERE products.productID NOT IN (SELECT productID FROM sales);
 -- 6. Esporre l’elenco dei prodotti con la rispettiva ultima data di vendita (la data di vendita più recente).
 
 -- tramite join seleziono prodotto e data più recente("grande")
-SELECT products.productName, MAX(sales.saledate) AS mostRecent
+SELECT products.productName, 
+	MAX(sales.saledate) AS mostRecent
 FROM products
 JOIN sales ON products.productID = sales.productID
 GROUP BY products.productName;
